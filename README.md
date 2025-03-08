@@ -1,6 +1,6 @@
 # UTH-CLOUD
 
-## Prerequisites (Ububtu)
+## Prerequisites (Ubuntu)
     sudo apt install gcc   
     sudo apt install mpich
 
@@ -31,3 +31,4 @@ e.g
         ],
         "version": 4
     }
+    // If you installed openmpi , the path will probably be "/usr/lib/x86_64-linux-gnu/openmpi/include"
