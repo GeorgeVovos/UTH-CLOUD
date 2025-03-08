@@ -4,7 +4,7 @@
     sudo apt install gcc   
     sudo apt install mpich
 
-## Buid-Run
+## Build-Run
     mpicc fileName.c   
     mpirun -n 4 ./a.out 
 
