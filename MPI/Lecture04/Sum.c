@@ -3,7 +3,7 @@
 #include <math.h>
 #include "mpi.h"
 
-#define N 6
+#define N 11
 int main(int argc, char **argv)
 {
     int rank, worldSize;
@@ -22,14 +22,21 @@ int main(int argc, char **argv)
     array[3] = 3;
     array[4] = 1;
     array[5] = 5;
-    // S={3,4,8,11,12,17}
+    array[6] = 6;
+    array[7] = 7;
+    array[8] = 8;
+    array[9] = 9;
+    array[10] = 2;
+    array[11] = 3;
 
-    // S={3,4,8}
-    // S={3,4,9}
+    // S={3,4,8,11,12,17 ,23,30,38,47 ,49 ,52}
 
-    // S={3,4}
-    // S={4,7}
-    // S={1,6}
+    // // S={3,4,8 ,11,12 ,17}
+    // // S={6,7,8 ,9 ,2, 3}
+
+    // // S={3,4,8}
+    // // S={1,7}
+    // // S={1,6}
 
     double start, end;
 
@@ -48,8 +55,6 @@ int main(int argc, char **argv)
         printf("Serial Time  : %f seconds\n", end - start);
     }
 
-
-
     MPI_Barrier(MPI_COMM_WORLD);
     for (int i = 1; i < N; i++)
     {
@@ -58,14 +63,36 @@ int main(int argc, char **argv)
 
     start = MPI_Wtime();
 
-    //Parallel
+    // Parallel
+
+    MPI_Bcast(array, N, MPI_INT, root, MPI_COMM_WORLD);
+    int part;
+    //part = (N / worldSize); // εάν N=11, size=3, part=3
+    part = N/worldSize + (N % worldSize != 0);
+    // if(rank ==0)
+    // {
+    //     printf("part=%d\n",part);
+    // }
+    int *arrayLocal = (int *)malloc(part * sizeof(int));
+    int localCounter=0;
+    for (int i = rank * part ; i < (rank + 1) * part; i++)
+    {
+        if (i < N)
+        {
+            // arrayLocal[localCounter] = arrayLocal[localCounter - 1] + array[i];
+            arrayLocal[localCounter] = array[i];
+            printf("Rank[%d] array[%d]= %d\n", rank, i, arrayLocal[localCounter]);
+        }
+        localCounter++;
+    }
+
     // for (size_t i = 0; i < N; i++)
     // {
     //     printf("%d ", arrayAcc[i]);
     // }
 
     // MPI_Bcast(array, N, MPI_INT, root, MPI_COMM_WORLD);
-    
+
     printf("\n");
     MPI_Finalize();
 
