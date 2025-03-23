@@ -124,15 +124,23 @@ int main(int argc, char **argv)
     {
        // printf("Rank[%d] receiving= %d\n", rank, received);
         MPI_Recv(&received, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        printf("Rank[%d] received= %d\n", rank, received);
+       // printf("Rank[%d] received= %d\n", rank, received);
 
-        for (int j = 0; j < part-1; j++)
+        for (int j = 0; j < part; j++)
         {
             arrayLocalAcc[j] = arrayLocalAcc[j ] + received;
             printf("Rank[%d] arrayLocalAcc after Receive[%d]= %d\n", rank, j, arrayLocalAcc[j]);
         }
         if (rank < worldSize - 1)
+        {
+            // for (int j = 0; j < part; j++)
+            // {
+            
+            //     printf("            Rank[%d] arrayLocalAcc2 after Receive[%d]= %d\n", rank, j, arrayLocalAcc[j]);
+            // }
+            printf("Rank[%d] sent %d\n", rank,arrayLocalAcc[part -  1]);
               MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+        }
     }
 
     // if (rank < worldSize - 1)
