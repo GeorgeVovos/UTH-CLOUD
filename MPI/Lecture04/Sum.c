@@ -92,7 +92,7 @@ int main(int argc, char **argv)
         arrayLocalAcc[i % part] = i % part == 0 ? array[i] : arrayLocalAcc[i % part - 1] + array[i];
         // arrayLocalAcc[localCounter] =array[i-1] +array[i];
 
-        printf("Rank[%d] arrayLocal[%d]= %d arrayLocalAcc[%d]= %d \n", rank, i % part, arrayLocal[i % part], i % part, arrayLocalAcc[i % part]);
+       // printf("Rank[%d] arrayLocal[%d]= %d arrayLocalAcc[%d]= %d \n", rank, i % part, arrayLocal[i % part], i % part, arrayLocalAcc[i % part]);
 
         // if (i <= rank)
         // {
@@ -115,22 +115,39 @@ int main(int argc, char **argv)
     // }
     // else
     // {
-        
+
     //     MPI_Recv(&received, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     //     printf("Rank[%d] received= %d\n", rank, received);
     // }
 
-    // if (rank < N)
-    // {
-    //     printf("Rank[%d] sending = %d\n", rank, arrayLocalAcc[part - 1]);
-    //     //MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
-    // }
-    // if (rank > 0)
-    // {
-    //      printf("Rank[%d] received= %d\n", rank, received);
-    //     // MPI_Recv(&received, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      
-    // }
+    if (rank > 0)
+    {
+       // printf("Rank[%d] receiving= %d\n", rank, received);
+        MPI_Recv(&received, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        printf("Rank[%d] received= %d\n", rank, received);
+
+        for (int j = 0; j < part-1; j++)
+        {
+            arrayLocalAcc[j] = arrayLocalAcc[j ] + received;
+            printf("Rank[%d] arrayLocalAcc after Receive[%d]= %d\n", rank, j, arrayLocalAcc[j]);
+        }
+        if (rank < worldSize - 1)
+              MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+    }
+
+    // if (rank < worldSize - 1)
+    if (rank == 0 )
+    {
+        //printf("Rank[%d] sending = %d\n", rank, arrayLocalAcc[part - 1]);
+        MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+        printf("Rank[%d] sent %d\n", rank,arrayLocalAcc[part - 1]);
+
+        for (int j = 0; j < part; j++)
+        {
+         
+            printf("Rank[%d] arrayLocalAcc [%d]= %d\n", rank, j, arrayLocalAcc[j]);
+        }
+    }
 
     // for (size_t i = 0; i < N; i++)
     // {
