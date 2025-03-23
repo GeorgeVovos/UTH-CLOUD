@@ -3,7 +3,7 @@
 #include <math.h>
 #include "mpi.h"
 
-#define N 11
+#define N 12
 int main(int argc, char **argv)
 {
     int rank, worldSize;
@@ -67,22 +67,44 @@ int main(int argc, char **argv)
 
     MPI_Bcast(array, N, MPI_INT, root, MPI_COMM_WORLD);
     int part;
-    //part = (N / worldSize); // εάν N=11, size=3, part=3
-    part = N/worldSize + (N % worldSize != 0);
-    // if(rank ==0)
-    // {
-    //     printf("part=%d\n",part);
-    // }
+    // part = (N / worldSize); // εάν N=11, size=3, part=3
+    part = N / worldSize + (N % worldSize != 0);
+    if (rank == 0)
+    {
+        printf("part=%d\n", part);
+    }
+
     int *arrayLocal = (int *)malloc(part * sizeof(int));
-    int localCounter=0;
-    for (int i = rank * part ; i < (rank + 1) * part; i++)
+    int *arrayLocalAcc = (int *)malloc(part * sizeof(int));
+    int localCounter = 0;
+    for (int i = rank * part; i < (rank + 1) * part; i++)
     {
         if (i < N)
         {
             // arrayLocal[localCounter] = arrayLocal[localCounter - 1] + array[i];
-            arrayLocal[localCounter] = array[i];
-            printf("Rank[%d] array[%d]= %d\n", rank, i, arrayLocal[localCounter]);
+            arrayLocal[localCounter] =  array[i];
         }
+        else
+        {
+            arrayLocal[localCounter] = 0;
+        }
+
+        
+        arrayLocalAcc[i%part] = i%part == 0 ?  array[i] :  arrayLocalAcc[i%part -1]  +array[i];
+        //arrayLocalAcc[localCounter] =array[i-1] +array[i];
+
+        printf("Rank[%d] arrayLocal[%d]= %d arrayLocalAcc[%d]= %d \n", rank, i%part, arrayLocal[i%part] , i%part, arrayLocalAcc[i%part]);
+
+      
+        // if (i <= rank)
+        // {
+        //      for (int j = 1; j < part; j++)
+        //      {
+        //          arrayLocalAcc[j] = arrayLocalAcc[j - 1] + arrayLocal[j];
+        //          printf("Rank[%d] arrayLocalAcc[%d]= %d\n", rank, j, arrayLocalAcc[j]);
+        //      }
+        // }
+
         localCounter++;
     }
 
