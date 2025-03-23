@@ -16,18 +16,13 @@ int main(int argc, char **argv)
 
     int *array = (int *)malloc(N * sizeof(int));
     int *arrayAcc = (int *)malloc(N * sizeof(int));
-    array[0] = 3;
-    array[1] = 1;
-    array[2] = 4;
-    array[3] = 3;
-    array[4] = 1;
-    array[5] = 5;
-    array[6] = 6;
-    array[7] = 7;
-    array[8] = 8;
-    array[9] = 9;
-    array[10] = 2;
-    array[11] = 3;
+    if (rank == 0)
+    {
+        for (int i = 0; i < N; i++)
+        {
+            array[i] = 1;
+        }
+    }
 
     // S={3,4,8,11,12,17 ,23,30,38,47 ,49 ,52}
 
