@@ -82,20 +82,18 @@ int main(int argc, char **argv)
         if (i < N)
         {
             // arrayLocal[localCounter] = arrayLocal[localCounter - 1] + array[i];
-            arrayLocal[localCounter] =  array[i];
+            arrayLocal[localCounter] = array[i];
         }
         else
         {
             arrayLocal[localCounter] = 0;
         }
 
-        
-        arrayLocalAcc[i%part] = i%part == 0 ?  array[i] :  arrayLocalAcc[i%part -1]  +array[i];
-        //arrayLocalAcc[localCounter] =array[i-1] +array[i];
+        arrayLocalAcc[i % part] = i % part == 0 ? array[i] : arrayLocalAcc[i % part - 1] + array[i];
+        // arrayLocalAcc[localCounter] =array[i-1] +array[i];
 
-        printf("Rank[%d] arrayLocal[%d]= %d arrayLocalAcc[%d]= %d \n", rank, i%part, arrayLocal[i%part] , i%part, arrayLocalAcc[i%part]);
+        printf("Rank[%d] arrayLocal[%d]= %d arrayLocalAcc[%d]= %d \n", rank, i % part, arrayLocal[i % part], i % part, arrayLocalAcc[i % part]);
 
-      
         // if (i <= rank)
         // {
         //      for (int j = 1; j < part; j++)
@@ -107,6 +105,32 @@ int main(int argc, char **argv)
 
         localCounter++;
     }
+
+    int received = 0;
+
+    // if (rank == 0)
+    // {
+    //     printf("Rank[%d] sending = %d\n", rank, arrayLocalAcc[part - 1]);
+    //     MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+    // }
+    // else
+    // {
+        
+    //     MPI_Recv(&received, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    //     printf("Rank[%d] received= %d\n", rank, received);
+    // }
+
+    // if (rank < N)
+    // {
+    //     printf("Rank[%d] sending = %d\n", rank, arrayLocalAcc[part - 1]);
+    //     //MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+    // }
+    // if (rank > 0)
+    // {
+    //      printf("Rank[%d] received= %d\n", rank, received);
+    //     // MPI_Recv(&received, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      
+    // }
 
     // for (size_t i = 0; i < N; i++)
     // {
