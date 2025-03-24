@@ -3,7 +3,7 @@
 #include <math.h>
 #include "mpi.h"
 
-#define N 12
+#define N 120000000
 int main(int argc, char **argv)
 {
     int rank, worldSize;
@@ -56,18 +56,19 @@ int main(int argc, char **argv)
         arrayAcc[i] = 0;
     }
 
-    start = MPI_Wtime();
+   
 
     // Parallel
-
+    start = MPI_Wtime();
     MPI_Bcast(array, N, MPI_INT, root, MPI_COMM_WORLD);
+    
     int part;
     // part = (N / worldSize); // εάν N=11, size=3, part=3
     part = N / worldSize + (N % worldSize != 0);
-    if (rank == 0)
-    {
-        printf("part=%d\n", part);
-    }
+    // if (rank == 0)
+    // {
+    //     printf("part=%d\n", part);
+    // }
 
     int *arrayLocal = (int *)malloc(part * sizeof(int));
     int *arrayLocalAcc = (int *)malloc(part * sizeof(int));
@@ -124,16 +125,15 @@ int main(int argc, char **argv)
         for (int j = 0; j < part; j++)
         {
             arrayLocalAcc[j] = arrayLocalAcc[j ] + received;
-            printf("Rank[%d] arrayLocalAcc after Receive[%d]= %d\n", rank, j, arrayLocalAcc[j]);
+           // printf("Rank[%d] arrayLocalAcc after Receive[%d]= %d\n", rank, j, arrayLocalAcc[j]);
         }
         if (rank < worldSize - 1)
         {
             // for (int j = 0; j < part; j++)
             // {
-            
             //     printf("            Rank[%d] arrayLocalAcc2 after Receive[%d]= %d\n", rank, j, arrayLocalAcc[j]);
             // }
-            printf("Rank[%d] sent %d\n", rank,arrayLocalAcc[part -  1]);
+           // printf("Rank[%d] sent %d\n", rank,arrayLocalAcc[part -  1]);
               MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
         }
     }
@@ -143,21 +143,18 @@ int main(int argc, char **argv)
     {
         //printf("Rank[%d] sending = %d\n", rank, arrayLocalAcc[part - 1]);
         MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
-        printf("Rank[%d] sent %d\n", rank,arrayLocalAcc[part - 1]);
+        // printf("Rank[%d] sent %d\n", rank,arrayLocalAcc[part - 1]);
 
-        for (int j = 0; j < part; j++)
-        {
-         
-            printf("Rank[%d] arrayLocalAcc [%d]= %d\n", rank, j, arrayLocalAcc[j]);
-        }
+        // for (int j = 0; j < part; j++)
+        //     printf("Rank[%d] arrayLocalAcc [%d]= %d\n", rank, j, arrayLocalAcc[j]);
+        
     }
 
-    // for (size_t i = 0; i < N; i++)
-    // {
-    //     printf("%d ", arrayAcc[i]);
-    // }
-
-    // MPI_Bcast(array, N, MPI_INT, root, MPI_COMM_WORLD);
+    end = MPI_Wtime();
+    if (rank == 0)
+    {
+        printf("Parallel Time  : %f seconds\n", end - start);
+    }
 
     printf("\n");
     MPI_Finalize();
