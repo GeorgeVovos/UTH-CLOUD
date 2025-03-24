@@ -29,10 +29,6 @@ int main(int argc, char **argv)
     // // S={3,4,8 ,11,12 ,17}
     // // S={6,7,8 ,9 ,2, 3}
 
-    // // S={3,4,8}
-    // // S={1,7}
-    // // S={1,6}
-
     double start, end;
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -86,35 +82,13 @@ int main(int argc, char **argv)
         }
 
         arrayLocalAcc[i % part] = i % part == 0 ? array[i] : arrayLocalAcc[i % part - 1] + array[i];
-        // arrayLocalAcc[localCounter] =array[i-1] +array[i];
 
        // printf("Rank[%d] arrayLocal[%d]= %d arrayLocalAcc[%d]= %d \n", rank, i % part, arrayLocal[i % part], i % part, arrayLocalAcc[i % part]);
-
-        // if (i <= rank)
-        // {
-        //      for (int j = 1; j < part; j++)
-        //      {
-        //          arrayLocalAcc[j] = arrayLocalAcc[j - 1] + arrayLocal[j];
-        //          printf("Rank[%d] arrayLocalAcc[%d]= %d\n", rank, j, arrayLocalAcc[j]);
-        //      }
-        // }
 
         localCounter++;
     }
 
     int received = 0;
-
-    // if (rank == 0)
-    // {
-    //     printf("Rank[%d] sending = %d\n", rank, arrayLocalAcc[part - 1]);
-    //     MPI_Send(&arrayLocalAcc[part - 1], 1, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
-    // }
-    // else
-    // {
-
-    //     MPI_Recv(&received, 1, MPI_INT, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //     printf("Rank[%d] received= %d\n", rank, received);
-    // }
 
     if (rank > 0)
     {
@@ -138,7 +112,6 @@ int main(int argc, char **argv)
         }
     }
 
-    // if (rank < worldSize - 1)
     if (rank == 0 )
     {
         //printf("Rank[%d] sending = %d\n", rank, arrayLocalAcc[part - 1]);

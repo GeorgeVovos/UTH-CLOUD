@@ -3,7 +3,7 @@
 #include <math.h>
 #include "mpi.h"
 
-#define N 120000000
+#define N 12
 int main(int argc, char **argv)
 {
     int rank, worldSize;
