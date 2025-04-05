@@ -3,7 +3,7 @@
 #include <time.h>
 #include "mpi.h"
 #include "math.h"
-#define N 30
+#define N 300000
 
 enum NotificationType
 {
@@ -39,9 +39,9 @@ char **argv;
             processorPowersArrayNormalized[i] = 0;
         }
 
-        for (int i = 1; i < N; i++)
+        for (int i = 0; i < N; i++)
         {
-            sourceArray[i] = i;
+            sourceArray[i] = i + 1;
         }
     }
 
