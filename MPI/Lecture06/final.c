@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 
     int worldSize, rank;
     int N = 20;
-    int a[] = {41, 467, 334, 500, 169, 724, 478, 358, 962, 464, 705, 145, 281, 827, 961, 491, 995, 942, 827, 436};
+    int sourceArray[] = {41, 467, 334, 500, 169, 724, 478, 358, 962, 464, 705, 145, 281, 827, 961, 491, 995, 942, 827, 436};
     int processorPowersArrayRaw[] = {3, 2, 4, 1};
     int processorPowersArrayNormalized[] = {0, 0, 0, 0};
 
@@ -59,13 +59,17 @@ int main(int argc, char **argv)
         sendCounts[worldSize - 1] = sendCounts[worldSize - 1] + (N - sendCountsSum);
     }
 
-    if (rank == 0)
-    {
-        for (int i = 0; i < worldSize; i++)
-        {
-            printf("Local size for rank %d: %d\n", rank, sendCounts[i]);
-        }
-    }
+    int localSize;
+    MPI_Scatter(sendCounts, 1, MPI_INT, &localSize, 1, MPI_INT, root, MPI_COMM_WORLD);
+    printf("Local size for rank %d: %d\n", rank, localSize);
+    float *localSource = (float *)malloc(localSize * sizeof(float));
+    MPI_Scatterv(sourceArray, sendCounts, displacements, MPI_FLOAT, localSource, localSize, MPI_FLOAT, root, MPI_COMM_WORLD);
+
+    // double localPi = 1.0;
+    // for (int i = 0; i < localSize; i++) {
+    //     localPi *= (4.0 * localSource[i] * localSource[i]) / (4.0 * localSource[i] * localSource[i] - 1);
+    // }
+
 
     MPI_Finalize();
     return 0;
