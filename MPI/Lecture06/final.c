@@ -2,6 +2,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+int findSecondLargest(int arr[], int n) {
+    int minInt=-999999;
+    if (n < 2) {
+        return minInt;
+    }
+
+    int first = minInt, second = minInt;
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i] > first) {
+            second = first;
+            first = arr[i];
+        } else if (arr[i] > second && arr[i] != first) {
+            second = arr[i];
+        }
+    }
+
+    if (second == minInt) {
+        return minInt;
+    }
+
+    return second;
+}
 
 int main(int argc, char **argv)
 {
@@ -70,13 +93,13 @@ int main(int argc, char **argv)
     //     localPi *= (4.0 * localSource[i] * localSource[i]) / (4.0 * localSource[i] * localSource[i] - 1);
     // }
 
- 
     // printf("Local source for rank %d: ", rank);
     // for (int i = 0; i < localSize; i++)
     // {
     //     printf(" %d ", localSource[i]);
     // }
     printf("\n");
+
 
     int secondLargest = localSource[0];
     for (int i = 1; i < localSize; i++)
@@ -93,7 +116,26 @@ int main(int argc, char **argv)
             secondLargest = localSource[i];
         }
     }
-    printf("Second largest number in local source for rank %d: %d\n", rank, secondLargest);
+    
+    //printf("Second largest number in local source for rank %d: %d\n", rank, secondLargest);
+
+    int *secondLargestArray = NULL;
+    if (rank == root)
+    {
+        secondLargestArray = (int *)malloc(worldSize * sizeof(int));
+    }
+    MPI_Gather(&secondLargest, 1, MPI_INT, secondLargestArray, 1, MPI_INT, root, MPI_COMM_WORLD);
+    if (rank == root)
+    {
+        // printf("Second largest number in local source\n");
+        // for (int i = 0; i < worldSize; i++)
+        // {
+        //     printf(" %d ", secondLargestArray[i]);
+        // }
+        int secondLargestGlobal = findSecondLargest(secondLargestArray, worldSize);
+    
+        printf("Second largest number in initial array: %d\n", secondLargestGlobal);
+    }
 
     MPI_Finalize();
     return 0;
