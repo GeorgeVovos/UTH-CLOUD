@@ -62,14 +62,38 @@ int main(int argc, char **argv)
     int localSize;
     MPI_Scatter(sendCounts, 1, MPI_INT, &localSize, 1, MPI_INT, root, MPI_COMM_WORLD);
     printf("Local size for rank %d: %d\n", rank, localSize);
-    float *localSource = (float *)malloc(localSize * sizeof(float));
-    MPI_Scatterv(sourceArray, sendCounts, displacements, MPI_FLOAT, localSource, localSize, MPI_FLOAT, root, MPI_COMM_WORLD);
+    int *localSource = (int *)malloc(localSize * sizeof(int));
+    MPI_Scatterv(sourceArray, sendCounts, displacements, MPI_INT, localSource, localSize, MPI_INT, root, MPI_COMM_WORLD);
 
     // double localPi = 1.0;
     // for (int i = 0; i < localSize; i++) {
     //     localPi *= (4.0 * localSource[i] * localSource[i]) / (4.0 * localSource[i] * localSource[i] - 1);
     // }
 
+ 
+    // printf("Local source for rank %d: ", rank);
+    // for (int i = 0; i < localSize; i++)
+    // {
+    //     printf(" %d ", localSource[i]);
+    // }
+    printf("\n");
+
+    int secondLargest = localSource[0];
+    for (int i = 1; i < localSize; i++)
+    {
+        if (localSource[i] > secondLargest)
+        {
+            secondLargest = localSource[i];
+        }
+    }
+    for (int i = 0; i < localSize; i++)
+    {
+        if (localSource[i] > secondLargest)
+        {
+            secondLargest = localSource[i];
+        }
+    }
+    printf("Second largest number in local source for rank %d: %d\n", rank, secondLargest);
 
     MPI_Finalize();
     return 0;
